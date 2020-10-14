@@ -1,1 +1,2 @@
 # Penrose-Tiling-Generator
+This program generates a kites and darts Penrose tiling. The kite and dart shapes are used to cover the entire plane without overlap. If the arcs of the same color line up, then they can only do so in a way that the pattern has no translational symmetry. The program generates the pattern through a process called deflation in which the base shapes can be replaced with smaller versions of the same base shapes. To make the pattern larger you just zoom in on an existing seed pattern and then deflate it to keep the base shapes the same size.
