@@ -31,11 +31,10 @@ class Triangle:
         self.b = b #outside of full shape
         self.c = c #inside of full shape
 
-    def coord_list(self):
-        return list(np.concatenate([self.a, self.b, self.c]))
+    def render_body(self, image):
+        image.create_polygon(list(np.concatenate([self.a, self.b, self.c])), fill=self.body_color, outline=self.body_color)
 
-    def _render(self, image, colors):
-        image.create_polygon(self.coord_list(), fill=colors)
+    def render_outline(self, image):
         image.create_line(list(np.concatenate([self.a, self.b, self.b, self.c])), fill='black', width=2)
 
 
@@ -44,7 +43,7 @@ class Triangle:
 class acTriangle(Triangle):
     def __init__(self, a, b, c):
         super().__init__(a, b, c)
-        self.main_color = ''
+        self.body_color = 'purple'
 
     def deflate(self):
         d = self.b + (self.a - self.b) / phi
@@ -53,9 +52,7 @@ class acTriangle(Triangle):
                 acTriangle(self.b, d, e),
                 obTriangle(d, e, self.a)]
 
-    def render(self, image):
-        self._render(image, 'purple')
-
+    def render_arcs(self, image):
         #draws connection arcs
         ac = self.c - self.a
         ab = self.b - self.a
@@ -73,14 +70,16 @@ class acTriangle(Triangle):
 
 
 class obTriangle(Triangle):
+    def __init__(self, a, b, c):
+        super().__init__(a, b, c)
+        self.body_color = 'blue'
+
     def deflate(self):
         d = self.c + (self.b - self.c) / phi
         return [acTriangle(self.c, d, self.a),
                 obTriangle(d, self.a, self.b)]
 
-    def render(self, image):
-        self._render(image, 'blue')
-
+    def render_arcs(self, image):
         #draws connection arcs
         ac = self.c - self.a
         ab = self.b - self.a
@@ -132,7 +131,7 @@ class Penrose:
 
     def deflate(self):
         prev_list = self.shapes
-        for i in range(6): #TODO how many
+        for i in range(4): #TODO how many
             new_list = []
             for shape in prev_list:
                 for new_shape in shape.deflate():
@@ -142,7 +141,11 @@ class Penrose:
 
     def render(self):
         for tri in self.shapes:
-            tri.render(self.image)
+            tri.render_body(self.image) #bodies
+        for tri in self.shapes:
+            tri.render_outline(self.image) #outlines
+        for tri in self.shapes:
+            tri.render_arcs(self.image) #arcs
 
 
 
